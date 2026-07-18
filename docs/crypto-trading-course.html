@@ -6,7 +6,7 @@
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/x-icon" href="favicon.ico" sizes="48x48">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Crypto Trading — Micro-Learning Program</title>
+<title>CryptoPro Training</title>
 <style>
   :root{
     --bg:#0b0e14; --panel:#141a24; --panel2:#1b2330; --line:#27303f;
@@ -72,7 +72,7 @@
   .brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:.5px;
     text-transform:uppercase;font-size:.82rem;color:var(--accent)}
   .brand .dot{width:8px;height:8px;border-radius:50%;background:var(--accent2);box-shadow:0 0 10px var(--accent2)}
-  header.top h1{margin:4px 0 4px;font-size:1.45rem;line-height:1.08;letter-spacing:-.6px}
+  header.top h1{margin:4px 0 4px;font-size:2.9rem;line-height:1.02;letter-spacing:-1.2px}
   header.top h1 span{background:linear-gradient(90deg,var(--accent),#ffd27a);-webkit-background-clip:text;
     background-clip:text;-webkit-text-fill-color:transparent}
   header.top p{margin:0;color:#aeb9c7;font-size:.9rem;line-height:1.35}
@@ -91,7 +91,7 @@
  .levelpick .levels button{border:1px solid var(--accent);background:rgba(255,255,255,.07);color:var(--accent);padding:7px 12px;border-radius:9px;cursor:pointer;font-size:.82rem;font-weight:700;white-space:nowrap;transition:.15s}
  .levelpick .levels button:hover{background:rgba(255,255,255,.16)}
  .levelpick .levels button.active{background:var(--accent);color:#0b0e14;border-color:var(--accent)}
- @media (max-width:720px){.banner-inner{grid-template-columns:1fr}.levelpick{justify-content:space-between;width:100%}}
+ @media (max-width:720px){.banner-inner{grid-template-columns:1fr}.levelpick{justify-content:space-between;width:100%}header.top h1{font-size:1.9rem}}
  .wrap{max-width:1120px;margin:0 auto;padding:14px 18px 60px}
   .quizbar{position:relative;z-index:4;background:rgba(0,0,0,.28);border-bottom:1px solid rgba(255,255,255,.10);
     padding:7px 18px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;justify-content:center;
@@ -112,13 +112,16 @@
   .reset:hover{color:var(--text);border-color:var(--muted)}
   .track{margin:20px 0 0}
   .track > h2{display:flex;align-items:center;gap:10px;font-size:1.25rem;margin:0 0 4px;
-    padding-bottom:8px;border-bottom:2px solid var(--line)}
+    padding-bottom:8px;border-bottom:2px solid var(--line);cursor:pointer;user-select:none}
   .track > h2{border-bottom:none;position:relative}
   .track > h2::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;
     background:linear-gradient(90deg,var(--accent),transparent)}
   .track .tnum{background:var(--accent);color:#000;font-weight:700;border-radius:8px;
     width:30px;height:30px;display:grid;place-items:center;font-size:.95rem}
   .track .ticon{font-size:1.3rem;line-height:1}
+  .track .tchev{margin-left:auto;color:var(--muted);transition:transform .25s;font-size:1rem}
+  .track:not(.collapsed) .tchev{transform:rotate(90deg)}
+  .track.collapsed .track-body{display:none}
   .track .tsub{color:var(--muted);font-size:.9rem;margin:2px 0 10px}
   .module{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     margin:10px 0;overflow:hidden}
@@ -245,8 +248,8 @@
   <div class="banner-inner">
     <div class="banner-text">
       <div class="brand"><span class="dot"></span> <img src="favicon.svg" alt="CryptoPro Training logo" style="width:20px;height:20px;vertical-align:-4px"> Crypto Academy</div>
-      <h1>Crypto Trading <span>Micro-Learning</span></h1>
-      <p>Bite-sized modules from spot basics to leverage and risk management — filtered to your level.</p>
+      <h1>CryptoPro <span>Training</span></h1>
+      <p>Crypto Trading Micro-Learning — bite-sized modules from spot basics to leverage and risk management, filtered to your level.</p>
       <div class="banner-stats">
         <span id="statTracks">📚 … tracks</span><span id="statModules">🔗 … video-link + reading modules</span><span>✅ progress saved automatically</span>
       </div>
@@ -283,7 +286,7 @@
   </details>
 
   <footer>
-    Crypto Trading Micro-Learning Program · <span id="statFooter">… tracks · … modules</span> · external video links + reading per module.<br>
+    CryptoPro Training · <span id="statFooter">… tracks · … modules</span> · external video links + reading per module.<br>
     Work through one track at a time. Don't risk real money until you've completed the Risk &amp; Psychology track.<br>
     <span id="courseVersion"></span>
   </footer>
@@ -1050,7 +1053,10 @@ const moduleIds = [];
 COURSE.forEach((track, ti) => {
   const tEl = document.createElement('section');
   tEl.className = 'track';
-  tEl.innerHTML = `<h2><span class="tnum">${ti+1}</span> <span class="ticon">${TRACK_ICON[ti]||''}</span> ${track.track}</h2><div class="tsub">${track.sub}</div>`;
+  const trackId = 'trk'+ti;
+  tEl.dataset.trackId = trackId;
+  tEl.innerHTML = `<h2 onclick="toggleTrack('${trackId}')"><span class="tnum">${ti+1}</span> <span class="ticon">${TRACK_ICON[ti]||''}</span> ${track.track}<span class="tchev">▶</span></h2><div class="tsub">${track.sub}</div><div class="track-body"></div>`;
+  const trackBody = tEl.querySelector('.track-body');
   track.modules.forEach((m) => {
     const id = 'm'+(idCounter++);
     moduleIds.push(id);
@@ -1091,7 +1097,7 @@ COURSE.forEach((track, ti) => {
         <div class="chev">▶</div>
       </div>
       <div class="mbody">${sec.join('')}</div>`;
-    tEl.appendChild(mod);
+    trackBody.appendChild(mod);
   });
   courseEl.appendChild(tEl);
 });
@@ -1103,7 +1109,7 @@ GLOSSARY.forEach(([t,d])=>{ gEl.innerHTML += `<dt>${t}</dt><dd>${d}</dd>`; });
 document.getElementById('statTracks').textContent = `📚 ${COURSE.length} tracks`;
 document.getElementById('statModules').textContent = `🔗 ${totalModules} video-link + reading modules`;
 document.getElementById('statFooter').textContent = `${COURSE.length} tracks · ${totalModules} modules`;
-const COURSE_VERSION = "1.38.0";
+const COURSE_VERSION = "1.39.0";
 document.getElementById('courseVersion').textContent = `v${COURSE_VERSION}`;
 
 /* ===================== CALCULATORS ===================== */
@@ -1193,6 +1199,7 @@ function applyLevel(){
   applyState();
 }
 function toggle(id){ document.querySelector(`.module[data-id="${id}"]`).classList.toggle('open'); }
+function toggleTrack(id){ document.querySelector(`.track[data-track-id="${id}"]`).classList.toggle('collapsed'); }
 function markDone(id,btn){
   const s = load(); s[id]=true; save(s); applyState();
   btn.textContent = '✓ Completed';

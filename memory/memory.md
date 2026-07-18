@@ -36,6 +36,18 @@ which shows the score of correctly answered and failed questions."
   All assertions passed. (Full browser install via Playwright was judged disproportionate for this
   static-site change; the harness exercises the real, unmodified function bodies.)
 
+## v1.38.0 — 2026-07-18 — Favicon: Bitcoin badge → graduation cap
+
+**Problem:** The favicon's ₿ badge said "crypto" but nothing said "training app" (user feedback).
+
+**Fix:** Replaced the Bitcoin ₿ badge in `docs/favicon.svg` with a graduation-cap (mortarboard)
+badge — same orange (`#f7931a`) circle, cap drawn as dark paths (board, base, tassel) so it stays
+crisp at small sizes with no font dependencies. Candlesticks and trend line unchanged.
+Re-rendered all rasters (`favicon.ico`, `favicon-32.png`, `favicon-192.png`,
+`apple-touch-icon.png`) via cairosvg. Version bump 1.37.0 → 1.38.0.
+
+**Verification:** Rendered at 180px and inspected visually — cap, tassel, and candles all legible.
+
 ## v1.37.0 — 2026-07-18 — Site favicon & logo
 
 **Task:** Create a favicon based on the site's theme and use it as the site logo (workflow rule #10).
