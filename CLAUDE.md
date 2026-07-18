@@ -20,9 +20,11 @@ Creator: Erik Kuipers
 11. When the session is complex and has a lot of tasks, issue the compact command in between tasks to save tokens.
 12. use the skills from the skills directory to improve your coding skills and update your trading knowledge.
 13. HTML pages should be located in the /docs folder.
+14. Use the title in the description as website title.
 
 ## Roadmap
-_No open roadmap items. Completed items are logged in `memory.md` (see v1.38.0)._
+
+_No open roadmap items. Completed items are logged in `memory.md` (see v1.40.0)._
 
 ## Bugs
 

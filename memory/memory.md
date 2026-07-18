@@ -6,6 +6,51 @@ Note: `CLAUDE.md` referenced a prior `v1.35.1` bug-fix entry, but this file was 
 start of this session (2026-07-18) — no earlier history survived. Versioning restarts here at
 v1.36.0 and this file is now the source of truth going forward.
 
+## v1.40.0 — 2026-07-18 — All-levels filter + theme bar as top row
+
+**Roadmap items implemented:**
+3. "Add the option to select all module of all levels in the module filter section."
+4. "Move the theme bar to the top row of the web app."
+
+### Changes
+
+- **New "🔷 All levels" button** in the level picker (`setLevel('all')`). `currentLevel` can now hold
+  the sentinel string `'all'` alongside the existing numeric 1/2/3. Every place that branched on
+  `currentLevel` was updated to special-case it: `applyLevel()`'s module-visibility check, the active-button
+  highlighting (switched from numeric `+b.dataset.l===currentLevel` to `b.dataset.l===String(currentLevel)`
+  so it works for both numbers and the `'all'` string), `applyState()`'s progress-bar denominator, and the
+  initial load from `localStorage` (previously `+(localStorage.getItem(LKEY))||1` would have silently
+  coerced a saved `'all'` back to `1` via `NaN||1` — fixed to check for the string first).
+- **Theme bar moved to the top row.** `.topbar` (theme picker) now renders before `.quizbar` (quiz score,
+  added in v1.38.0) in the header markup, so it's the first strip visitors see, above the quiz score bar.
+- Added `LEVEL_NAMES.all` / `LEVEL_DESC.all` for the picker's label and description text.
+- Version bump: `COURSE_VERSION` 1.39.0 → 1.40.0.
+
+### Note on v1.39.0 (site title + track collapse)
+
+Two more roadmap items — "put the site title top-left at 2x size" (using `CryptoPro Training`, the
+`Title:` field from `CLAUDE.md`'s own description, per workflow rule #14) and "add the option to
+collapse tracks the same way modules collapse" — were implemented in this same working tree but ended
+up bundled into a separate concurrent commit (`ecd7c08`, "replace Bitcoin badge with graduation cap")
+whose own changelog entry only covers the favicon. Recording what that commit's diff actually contains,
+for the record: `<title>`/`<h1>` changed to "CryptoPro Training" (h1 font-size 1.45rem → 2.9rem, with a
+1.9rem mobile fallback under 720px), footer branding updated to match, and each track's `<h2>` became
+clickable (`toggleTrack()`) collapsing a new `.track-body` wrapper around its modules — mirroring the
+existing per-module collapse — with a rotating chevron matching the module chevron's visual language.
+
+### Verification
+
+- `node --check` on the extracted `<script>` block — syntax OK.
+- Installed `jsdom` in the scratch directory and loaded the **actual rendered file** (not copied logic)
+  with `runScripts:'dangerously'`, then drove it through `window.setLevel`/`window.toggleTrack` and read
+  back real computed styles and `localStorage`. Confirmed: 67 modules / 9 tracks render; `setLevel(1)`
+  shows only lvl 0/1 modules; `setLevel('all')` shows all 67 and marks the "All levels" button active;
+  the progress counter denominator matches the total under "all"; `'all'` round-trips through
+  `localStorage`; switching back to `setLevel(2)` still correctly filters to lvl 0/2; `toggleTrack()`
+  collapses/expands a track with `track-body` computing to `display:none` via the real CSS cascade;
+  `.topbar` now precedes `.quizbar` in document order; `document.title` and the `<h1>` both read
+  "CryptoPro Training". All assertions passed with no failures logged.
+
 ## v1.38.0 — 2026-07-18 — Quiz score mini dashboard
 
 **Roadmap item implemented:** "Add a mini dashboard at the top of the page on top of the banner,
