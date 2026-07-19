@@ -1,29 +1,34 @@
 # Crypto Trading — Micro-Learning Program
 
-An interactive, self-paced crypto trading course covering everything from your first spot trade to leverage, market structure, and risk management. It runs entirely in your web browser — no installation, no account, no internet required (except for the optional video links).
-
-## Files in this folder
-
-- **`crypto-trading-course.html`** — the course itself. This is the only file you open.
-- **`trading-journal.xlsx`** — a companion trade journal & backtest spreadsheet (linked from inside the course). Keep it in this same folder so the in-course download link works.
-- **`README.md`** — this guide.
+An interactive, self-paced crypto trading course covering everything from your first spot trade to leverage, market structure, and risk management. It's a Node.js + React app (see `## Hosting & frontend` below); your progress, chosen level, and theme are saved automatically in your browser's local storage.
 
 ## Getting started
 
-Double-click **`crypto-trading-course.html`** to open it in any modern browser (Chrome, Edge, Firefox, Safari). That's it. Your progress, chosen level, and theme are saved automatically in that browser, so you can close it and pick up where you left off.
+```sh
+npm run build   # installs client/ deps and builds the React app
+npm start        # serves it at http://localhost:3000
+```
 
-> Tip: if you move the course, move `trading-journal.xlsx` with it.
+Or `npm run dev` for a hot-reloading dev server. The companion trade journal & backtest spreadsheet (`docs/trading-journal.xlsx`) is linked from inside the "Trading journal & backtest template" module.
+
+## Hosting & frontend
+
+- Node.js + Express (`server.js`) serves the built React app (`client/dist`, built via `vite build`), the course content/logic (`src/js/course.js`, `src/css/course.css`), and remaining static assets (favicons, `trading-journal.xlsx`) from `docs/`.
+- `client/` is its own npm project (own `package.json`) — root `npm run build` runs `npm --prefix client install && npm --prefix client run build` so a fresh clone installs `client/`'s own `vite`/`react` deps before building (same pattern as CryptoPro Trader).
+- React owns only the shell chrome (`Header`/`PageIntro`/`Footer`); `src/js/course.js` (the course data, rendering, quiz/progress state, and calculators — unchanged from the prior static-HTML version) is loaded as a classic script after React's first render, same bridge pattern used by CryptoPro Trader's dashboard.
+- No longer hosted on GitHub Pages (static-only, can't run a Node server) — the old `.github/workflows/static.yml` was removed. Needs a Node-capable host (Vercel, matching Trader/Charts) — **linking a new Vercel project is a manual step**, not yet done as of this conversion.
+- Browser click-through **not yet verified** — exercise theme switching, level filtering, module open/close, quiz answers, calculators, and progress persistence before relying on it.
 
 ## The course at a glance
 
 - **67 short modules across 9 tracks** — each module is a 10–15 minute "micro-lesson."
 - Tracks: Foundations & Spot Trading · Technical Analysis · Futures & Leverage · Risk Management & Psychology · Advanced Charting & Market Structure · Strategies & Playbooks · Crypto Market Structure & Sentiment · Portfolio Risk & Execution · Practice, Tools & Capstone.
 
-## Choosing your level (top-right of the banner)
+## Choosing your level (header, top right)
 
 Pick **Beginner**, **Intermediate**, or **Advanced**. The course instantly filters to show only modules for that level and hides the rest. You can switch any time — your progress for each level is tracked separately. A handful of universal items (the calculators, the "reality of trading" lesson, the journal, security, and the capstone) are tagged **All levels** and stay visible no matter what you select.
 
-## Changing the theme (very top row)
+## Changing the theme (header, top right)
 
 Five colour schemes are available: **Dark, Light, Ocean, Forest, Grape**. Click a coloured swatch to switch instantly; your choice is remembered.
 

@@ -1,0 +1,24 @@
+{
+  "name": "cryptopro-training",
+  "version": "0.1.0",
+  "description": "Crypto Trading Micro-Learning course (Node.js + React).",
+  "type": "module",
+  "private": true,
+  "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "dev": "concurrently \"node --watch server.js\" \"npm --prefix client run dev\"",
+    "build": "npm --prefix client install && npm --prefix client run build"
+  },
+  "dependencies": {
+    "express": "^4.22.2"
+  },
+  "author": "Erik Kuipers",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "concurrently": "^10.0.3"
+  }
+}

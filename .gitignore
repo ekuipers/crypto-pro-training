@@ -1,2 +1,11 @@
 # Local tool/agent state — not part of the site
 ruvector.db
+
+# Local credentials — never commit
+.env
+
+# Node.js
+node_modules/
+
+# Vite build output (generated — see client/src/)
+client/dist/

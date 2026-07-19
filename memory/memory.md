@@ -2,6 +2,58 @@
 
 Running log of changes to the Crypto Trading Micro-Learning course, per the workflow rules in `CLAUDE.md`.
 
+## v2.0.0 — 2026-07-19 — Converted to Node.js + React (Suite roadmap items 1 & 2)
+
+**Task:** "rescan roadmap." CryptoPro Suite's `CLAUDE.md` roadmap listed two open items for this project:
+(1) convert to a React frontend + Node.js backend (Suite rules 24/25), and (2) make the web layout
+consistent with CryptoPro Charts and Trader (Suite rule 17: same title-bar/footer height, same font,
+favicon-as-logo). Both implemented in this pass, mirroring the conversion CryptoPro Trader went through
+earlier the same day.
+
+**What changed (mechanical extraction, zero content/logic change):**
+
+- The single 1,275-line `docs/crypto-trading-course.html` was split: the inline `<style>` block →
+  `src/css/course.css`; the `COURSE`/`GLOSSARY` data arrays + all rendering, quiz, progress-persistence,
+  and calculator logic (`setTheme`, `setLevel`, `renderTool`, `calc_*`, etc.) → `src/js/course.js`,
+  copied verbatim via `sed` (not retyped) to avoid transcription risk. None of the 67 modules' content,
+  the 5-theme system, the 3 calculators, or the localStorage-backed progress/quiz state changed.
+- `client/` — new Vite + React shell (`package.json`, `vite.config.js`, `index.html`, `main.jsx`,
+  `App.jsx`), same bridge pattern as CryptoPro Trader: React owns only the header/footer chrome;
+  `course.js` is loaded as a classic script after React's first commit (`scriptLoader.js`) and queries
+  `#course`/`#glossary`/etc. synchronously, unchanged.
+- `server.js` + root `package.json` — Express entrypoint serving `client/dist`, `src/js`, `src/css`, and
+  `docs/` (remaining static assets: favicons, `trading-journal.xlsx`), identical structure to Trader's.
+
+**Layout-consistency redesign (roadmap item 2) — supersedes the v1.41.1 "intentional exception":**
+That earlier entry explicitly declined to flatten the hero-banner header, reasoning this was a
+"marketing-style landing page," not a utility bar like the other sub-projects, and left it as a
+documented exception. The Suite roadmap re-raised the same ask, so this pass reverses that decision:
+removed the SVG candlestick banner art, the gradient hero background, and the multi-part banner/topbar/
+quizbar stack; replaced with a single-row `.site-header` (favicon + "CryptoPro Training" wordmark, theme
+swatches, level picker) using the exact padding/sticky/font convention as Trader's header, and a
+single-line `.site-footer` matching Trader's footer classes (`footer-name`, `footer-sep`,
+`footer-logo-icon`). The page title, tagline, module-count stats, and quiz-score readout moved into a
+plain `.page-intro` above the module list instead of a hero banner. All functional element IDs
+(`#themes`, `#tname`, `#levels`, `#lvlDesc`, `#quizCorrect`/`#quizWrong`/`#quizAcc`/`#quizTotal`,
+`#statTracks`/`#statModules`/`#statFooter`, `#courseVersion`) were preserved exactly so `course.js`
+needed zero changes beyond the version bump below.
+
+**Hosting:** GitHub Pages (`.github/workflows/static.yml`) removed — it can only serve static files and
+this is now a Node/Express app. **Not yet done:** linking a new Vercel project (or equivalent Node host)
+for live hosting — the old `https://ekuipers.github.io/crypto-pro-training/...` URL will go stale once
+this is pushed; Suite's sub-project link needs updating once a new URL exists. `docs/crypto-trading-course.html`
+and `docs/index.html` (the old GH-Pages redirect) were deleted; `docs/` now holds only favicons and
+`trading-journal.xlsx`, same role it plays in Trader.
+
+**`COURSE_VERSION`** bumped 1.41.1 → 2.0.0 (architecture change, not a content change).
+
+**Verified:** `npm run build` succeeds (client installs + `vite build`, 30 modules transformed); local
+`node server.js` smoke test — homepage, `/js/course.js`, `/css/course.css`, favicons, and
+`trading-journal.xlsx` all return 200 with expected content; `node --check src/js/course.js` passes.
+**Not verified:** an actual browser click-through (no browser tool available this session) — exercise
+theme switching, level filtering, module open/close, quiz answers, the three calculators, and progress
+persistence across reloads before relying on this for real course delivery.
+
 Note: `CLAUDE.md` referenced a prior `v1.35.1` bug-fix entry, but this file was found empty at the
 start of this session (2026-07-18) — no earlier history survived. Versioning restarts here at
 v1.36.0 and this file is now the source of truth going forward.
