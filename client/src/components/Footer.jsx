@@ -15,6 +15,7 @@ export default function Footer() {
       <span>Creator: <strong>Erik Kuipers</strong></span>
       <span className="footer-sep">·</span>
       <span>Version: <strong id="courseVersion"></strong></span>
+      <a className="footer-donate" href="https://buymeacoffee.com/erikkuipers" target="_blank" rel="noopener">☕ Donate</a>
     </footer>
   );
 }

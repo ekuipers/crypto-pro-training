@@ -2,6 +2,28 @@
 
 Running log of changes to the Crypto Trading Micro-Learning course, per the workflow rules in `CLAUDE.md`.
 
+## v2.0.1 — 2026-07-19 — Roadmap: suite-wide workflow-rules verification pass
+
+**Task:** "rescan roadmap." Own Roadmap/Bugs were empty. The only open item across the whole suite was
+the Suite-level roadmap: "Verify all projects against the workflow rules in this file" — full audit +
+findings logged in `CryptoPro Suite/memory/memory.md`.
+
+**Gaps found and fixed here:**
+- Rule 3 (donation link in footer): `client/src/components/Footer.jsx` had title/creator/version but no
+  donation link. Added a `☕ Donate` link to `https://buymeacoffee.com/erikkuipers` + a matching
+  `.footer-donate` style in `src/css/course.css` (amber `#e0b45c`, matching Suite's own donate-link color).
+- Rule 14 ("CryptoPro" a different color than the extension text): `Header.jsx` rendered
+  `CryptoPro Training` as one plain text node — no color split. Wrapped `CryptoPro` in a
+  `<span className="brand-cp">`, colored `var(--accent)` (already theme-aware — changes per the 5 existing
+  theme swatches) via `.brand .brand-cp` in `src/css/course.css`.
+
+**Not touched, correctly out of scope:** rule 18 (single Supabase DB / SSO) work is already tracked as its
+own `TO DO` items in Suite's `CLAUDE.md`, explicitly marked "don't implement, for planning only."
+
+**Verified:** `npm --prefix client run build` — succeeds, no JSX/CSS errors. Version bumped v2.0.0 →
+v2.0.1 (`COURSE_VERSION` in `src/js/course.js` — the footer reads this constant directly, single source
+of truth, no separate footer edit needed).
+
 ## v2.0.0 — 2026-07-19 — Converted to Node.js + React (Suite roadmap items 1 & 2)
 
 **Task:** "rescan roadmap." CryptoPro Suite's `CLAUDE.md` roadmap listed two open items for this project:

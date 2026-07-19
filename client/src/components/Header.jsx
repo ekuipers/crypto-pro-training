@@ -22,7 +22,7 @@ export default function Header() {
     <header className="site-header">
       <div className="brand">
         <img src="/favicon.svg" alt="CryptoPro Training logo" />
-        CryptoPro Training
+        <span className="brand-cp">CryptoPro</span> Training
       </div>
 
       <div className="header-right">

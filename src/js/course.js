@@ -818,7 +818,7 @@ GLOSSARY.forEach(([t,d])=>{ gEl.innerHTML += `<dt>${t}</dt><dd>${d}</dd>`; });
 document.getElementById('statTracks').textContent = `📚 ${COURSE.length} tracks`;
 document.getElementById('statModules').textContent = `🔗 ${totalModules} video-link + reading modules`;
 document.getElementById('statFooter').textContent = `${COURSE.length} tracks · ${totalModules} modules`;
-const COURSE_VERSION = "2.0.0";
+const COURSE_VERSION = "2.0.1";
 document.getElementById('courseVersion').textContent = `v${COURSE_VERSION}`;
 
 /* ===================== CALCULATORS ===================== */

@@ -48,6 +48,7 @@
     gap:16px;flex-wrap:wrap;position:sticky;top:0;z-index:100}
   .brand{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:850;
     letter-spacing:-.2px;color:var(--text)}
+  .brand .brand-cp{color:var(--accent)}
   .brand img{width:22px;height:22px;border-radius:6px;vertical-align:middle}
   .header-right{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .themes{display:flex;align-items:center;gap:7px}
@@ -85,6 +86,8 @@
   .site-footer .footer-name{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--text);font-size:13px}
   .site-footer .footer-logo-icon{width:18px;height:18px;border-radius:4px;vertical-align:middle}
   .site-footer .footer-sep{color:var(--line)}
+  .footer-donate{color:#e0b45c;text-decoration:none}
+  .footer-donate:hover{color:#f0c876}
   .progress-box{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);
     padding:11px 14px;margin:12px 0;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
   .bar{flex:1;min-width:180px;height:12px;background:var(--panel2);border-radius:99px;overflow:hidden}

@@ -9,3 +9,6 @@ node_modules/
 
 # Vite build output (generated — see client/src/)
 client/dist/
+
+# Scratch/debug files from investigations — not source
+/debug/
