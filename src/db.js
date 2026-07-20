@@ -102,6 +102,18 @@ export async function init() {
     used       boolean not null default false
   )`);
   await q(`create index if not exists sso_tickets_expires_idx on sso_tickets(expires_at)`);
+  // Course progress/settings sync (Suite roadmap: save user state — layouts,
+  // progress, etc. — in the database so it follows the account across
+  // devices/browsers). Same generic uid+name→jsonb shape CryptoPro Charts
+  // already uses for its layouts table; here there's only ever one row per
+  // user (SESSION_NAME) — no named/multiple saves like Charts' layouts.
+  await q(`create table if not exists layouts (
+    uid        text not null,
+    name       text not null,
+    data       jsonb not null,
+    updated_at timestamptz not null default now(),
+    primary key (uid, name)
+  )`);
   console.log('[db] connected; tables ready');
   return true;
 }
@@ -182,4 +194,17 @@ export async function consumeSsoTicket(token) {
     [token],
   );
   return rows[0]?.uid || null;
+}
+
+// ---- Progress/settings sync (session row only — no named layouts) --------
+export async function getLayout(uid, name) {
+  const { rows } = await q('select data from layouts where uid = $1 and name = $2', [uid, name]);
+  return rows[0]?.data ?? null;
+}
+export async function putLayout(uid, name, data) {
+  await q(
+    `insert into layouts (uid, name, data, updated_at) values ($1, $2, $3::jsonb, now())
+     on conflict (uid, name) do update set data = excluded.data, updated_at = now()`,
+    [uid, name, JSON.stringify(data)],
+  );
 }

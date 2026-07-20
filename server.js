@@ -8,7 +8,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync } from 'fs';
-import { installAuthRoutes } from './src/auth.js';
+import { installAuthRoutes, currentUid } from './src/auth.js';
 import * as db from './src/db.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -44,6 +44,32 @@ app.use(express.json({ limit: '2mb' }));
 // Multi-user auth (SSO) — accounts & sessions persist in the same Supabase
 // Postgres database as the rest of CryptoPro Suite. See src/db.js.
 installAuthRoutes(app);
+
+// Progress/settings sync (Suite roadmap: save user state in the database so
+// it follows the account across devices/browsers). One row per account
+// (or the GUEST sentinel when signed out) holding theme, level filter,
+// module-completion progress, and quiz results as a single JSON blob —
+// same uid-scoped pattern CryptoPro Charts already uses for its layouts.
+app.get('/api/session', async (req, res) => {
+  try {
+    const data = await db.getLayout(await currentUid(req), db.SESSION_NAME);
+    if (data == null) return res.status(404).json(null);
+    res.json(data);
+  } catch (e) {
+    console.error('[api] get session:', e.message);
+    res.status(500).json(null);
+  }
+});
+
+app.put('/api/session', async (req, res) => {
+  try {
+    await db.putLayout(await currentUid(req), db.SESSION_NAME, req.body);
+    res.json({ ok: true });
+  } catch (e) {
+    console.error('[api] put session:', e.message);
+    res.status(500).json({ error: String(e.message) });
+  }
+});
 
 app.use('/js', express.static(join(__dirname, 'src', 'js')));
 app.use('/css', express.static(join(__dirname, 'src', 'css')));

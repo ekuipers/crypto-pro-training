@@ -19,6 +19,7 @@ Or `npm run dev` for a hot-reloading dev server. The companion trade journal & b
 - No longer hosted on GitHub Pages (static-only, can't run a Node server) — the old `.github/workflows/static.yml` was removed. Needs a Node-capable host (Vercel, matching Trader/Charts) — **linking a new Vercel project is a manual step**, not yet done as of this conversion.
 - Browser click-through **not yet verified** — exercise theme switching, level filtering, module open/close, quiz answers, calculators, and progress persistence before relying on it.
 - **Account sign-in (Suite SSO, optional):** a `👤 Sign in` header button (username/password, optional TOTP 2FA), backed by `src/auth.js` + `src/db.js` + `src/totp.js` — the same accounts/sessions pattern already running in CryptoPro Charts and CryptoPro Suite. Point `DBCRYPTOCHARTS_POSTGRES_URL[_NON_POOLING]` at Charts' Supabase Postgres project (see `.env.example`) to share one login suite-wide. Without it, sign-in/register return 503 and the course works unaffected — progress always stays in browser `localStorage`.
+- **Progress sync (optional, follows sign-in):** when signed in and the database is configured, theme/level/module-completion/quiz-score state also syncs to your account (`src/js/course.js`, `/api/session`), so it follows you across devices and browsers instead of staying pinned to one browser's `localStorage`.
 
 ## The course at a glance
 

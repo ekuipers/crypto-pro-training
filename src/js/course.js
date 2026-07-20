@@ -863,10 +863,41 @@ function calc_liq(id){
 }
 function initCalcs(){ document.querySelectorAll('.calc').forEach(c=>{ const f=window[c.dataset.fn]; if(f) f(c.dataset.mid); }); }
 
+/* ================== SERVER SYNC (Suite roadmap: save progress/settings
+   in the database so they follow the account across devices/browsers) ===
+   Same uid-scoped session pattern CryptoPro Charts already uses for its
+   layouts table. Silently no-ops when signed out or offline — localStorage
+   (below) stays the source of truth in that case, same as before this. */
+async function apiGet(path){ const r = await fetch(path); if(!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); }
+async function apiPut(path, data){
+  const r = await fetch(path, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data) });
+  if(!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
+function debounce(fn, ms){ let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; }
+function syncSnapshot(){
+  return { theme: document.documentElement.getAttribute('data-theme') || 'dark', level: currentLevel, progress: load(), quiz: loadQuiz() };
+}
+const scheduleSync = debounce(() => { apiPut('/api/session', syncSnapshot()).catch(()=>{}); }, 1500);
+async function loadSyncedState(){
+  let data;
+  try { data = await apiGet('/api/session'); } catch { return; } // offline/signed-out/no row — keep local state
+  if(!data) return;
+  if(data.progress) save(data.progress);
+  if(data.quiz) saveQuiz(data.quiz);
+  if(data.theme){ try{ localStorage.setItem(THEME_KEY, data.theme); }catch(e){} }
+  if(data.level !== undefined){ try{ localStorage.setItem(LKEY, data.level); }catch(e){} }
+  // Re-apply now that localStorage reflects the server's copy.
+  setTheme(data.theme || document.documentElement.getAttribute('data-theme') || 'dark');
+  currentLevel = data.level === 'all' ? 'all' : (+data.level || 1);
+  applyLevel();
+  applyQuizState();
+}
+
 /* ============================ STATE ============================ */
 const KEY = 'cryptoCourseProgress_v1';
 function load(){ try{return JSON.parse(localStorage.getItem(KEY))||{};}catch(e){return {};} }
-function save(s){ try{localStorage.setItem(KEY, JSON.stringify(s));}catch(e){} }
+function save(s){ try{localStorage.setItem(KEY, JSON.stringify(s));}catch(e){} scheduleSync(); }
 
 function applyState(){
   const s = load();
@@ -889,8 +920,9 @@ function setTheme(t){
   try{ localStorage.setItem(THEME_KEY, t); }catch(e){}
   document.querySelectorAll('#themes .swatch').forEach(s=>s.classList.toggle('active', s.dataset.theme===t));
   const n=document.getElementById('tname'); if(n) n.textContent = THEME_NAMES[t]||t;
+  scheduleSync();
 }
-function setLevel(l){ currentLevel = l; try{localStorage.setItem(LKEY, l);}catch(e){} applyLevel(); }
+function setLevel(l){ currentLevel = l; try{localStorage.setItem(LKEY, l);}catch(e){} applyLevel(); scheduleSync(); }
 function applyLevel(){
   document.querySelectorAll('#levels button').forEach(b=>
     b.classList.toggle('active', b.dataset.l === String(currentLevel)));
@@ -920,7 +952,7 @@ function markDone(id,btn){
    answered state) survives page reloads instead of resetting every visit. */
 const QUIZ_KEY = 'cryptoCourseQuizState_v1';
 function loadQuiz(){ try{return JSON.parse(localStorage.getItem(QUIZ_KEY))||{};}catch(e){return {};} }
-function saveQuiz(s){ try{localStorage.setItem(QUIZ_KEY, JSON.stringify(s));}catch(e){} }
+function saveQuiz(s){ try{localStorage.setItem(QUIZ_KEY, JSON.stringify(s));}catch(e){} scheduleSync(); }
 function updateQuizDashboard(qs){
   qs = qs || loadQuiz();
   const results = Object.values(qs);
@@ -969,3 +1001,4 @@ setTheme(document.documentElement.getAttribute('data-theme') || 'dark');
 applyLevel();
 initCalcs();
 applyQuizState();
+loadSyncedState();

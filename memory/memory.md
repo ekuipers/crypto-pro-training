@@ -2,6 +2,41 @@
 
 Running log of changes to the Crypto Trading Micro-Learning course, per the workflow rules in `CLAUDE.md`.
 
+## v2.0.6 — 2026-07-21 — Roadmap: progress/settings sync to Postgres (Suite roadmap)
+
+**Task:** "rescan roadmap," run from CryptoPro Trader with write access to all sub-repos. Suite roadmap
+item: "Across all projects, save any user state like layouts, progress, etc. in the database... across
+devices, browsers and sessions." CryptoPro Charts already had a proven reference implementation — a
+generic `layouts(uid, name, data jsonb)` table + `/api/session` GET/PUT + a client `persistence.js` with a
+debounced autosave and server-first/localStorage-fallback load. Ported the same table shape and routes here
+(no need for Charts' `/api/layouts` named-save feature — this course only ever has one state blob per user).
+
+**What syncs:** theme (`THEME_KEY`), level filter (`LKEY`), module-completion progress (`KEY`), and quiz
+results (`QUIZ_KEY`) — everything `course.js` already tracked in `localStorage`. No credentials or anything
+sensitive involved (unlike CryptoPro Trader's equivalent pass in the same session, which had to explicitly
+exclude Alpaca API keys — not a concern here).
+
+**Change:** `src/db.js` — added the `layouts` table to `init()` plus `getLayout`/`putLayout` (`GUEST`/
+`SESSION_NAME` constants already existed, unused, from the 2026-07-19 SSO port). `server.js` — imported
+`currentUid`, added `/api/session` GET/PUT. `src/js/course.js` — new `apiGet`/`apiPut`/`debounce`/
+`syncSnapshot`/`scheduleSync`/`loadSyncedState()` block; `save()` and `saveQuiz()` now call `scheduleSync()`
+after writing to `localStorage` (covers `markDone()` and `resetProgress()` for free, since they go through
+these); `setTheme()`/`setLevel()` call it directly since they don't. `loadSyncedState()` runs once at the
+bottom of the script, after the existing synchronous local-state init — if the server has a row, it
+overwrites the 4 `localStorage` keys and re-runs `setTheme()`/`applyLevel()`/`applyQuizState()` so the page
+reflects the synced copy (server wins whenever present, matching Charts' `loadAutosave()` precedent exactly
+— no merge/diff against local). Offline/signed-out/no-row cases silently no-op via try/catch, same as before
+this change existed.
+
+**`COURSE_VERSION`** bumped 2.0.5 → 2.0.6 (this file's constant — see the note in the previous entry about
+why this needs bumping directly, not just the changelog header).
+
+**Verified:** `npm --prefix client run build` (31 modules, 0 errors). `node --check` on `course.js`/
+`server.js`/`db.js`. Booted the server locally with no DB configured and confirmed via `curl`: `/api/session`
+GET/PUT both 500 (caught by the route's own try/catch and by the client's, falls back to `localStorage`
+exactly as before — same unguarded-`dbEnabled()` behavior Charts' own routes already have), `/js/course.js`
+still 200s unchanged.
+
 ## v2.0.5 — 2026-07-21 — Roadmap: header logo shrunk to match the footer
 
 **Task:** "run the last roadmap item also for projects Charts and Training," follow-up to the same fix
