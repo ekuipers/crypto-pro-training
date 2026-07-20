@@ -2,6 +2,24 @@
 
 Running log of changes to the Crypto Trading Micro-Learning course, per the workflow rules in `CLAUDE.md`.
 
+## v2.0.3 — 2026-07-20 — Roadmap: cross-project auto sign-in (SSO ticket handoff)
+
+**Task:** "rescan roadmap," run from CryptoPro Trader with write access to all 4 suite repos. Suite roadmap
+item: "Whenever the user is signed in to the Suite, automatically sign in to other projects." Full
+cross-repo narrative + security review logged in `CryptoPro Suite/memory/memory.md`; this entry covers only
+the slice added here. (Suite's other open bug against this project — "sign-in doesn't work — database
+error" — was explicitly scoped out of this rescan and is still open.)
+
+**Change:** `src/db.js` gained a `sso_tickets` table (token PK, uid FK, expires_at, used) created
+idempotently in `init()`, plus `createSsoTicket`/`consumeSsoTicket` (atomic single-use `UPDATE ...
+RETURNING uid`). `src/auth.js` gained `POST /api/auth/sso-ticket` (mints a 60s single-use ticket for the
+signed-in caller) and an `app.use` middleware — registered before the static routes in `server.js` — that
+consumes a `?sso=<token>` param on any GET request, mints a normal local session if valid, and always
+302-redirects to a clean URL. This app only gained the *consuming* side for now; nothing here calls
+`/api/auth/sso-ticket` to issue one yet.
+
+**Verified:** `node --check` on both edited files. No existing test suite in this project to run against.
+
 ## v2.0.2 — 2026-07-19 — Suite TO DO item 1: SSO with CryptoPro Charts/Suite
 
 **Task:** explicit user request ("implement one roadmap item from the Suite project" → chose "SSO across
