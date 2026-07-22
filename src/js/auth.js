@@ -15,6 +15,17 @@ function authEsc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// Renders the otpauth:// URI as a QR image via the vendored qrcode-lib.js
+// (global `qrcode`, loaded alongside this script — see scriptLoader.js's
+// loadAuthScript()). Falls back to the plain link if the library didn't load.
+function totpQrTag(otpauthUri) {
+  if (typeof window.qrcode !== 'function') return `<p class="small">${authEsc(otpauthUri)}</p>`;
+  const qr = window.qrcode(0, 'M');
+  qr.addData(otpauthUri);
+  qr.make();
+  return qr.createImgTag(6, 8, '2FA setup QR code');
+}
+
 function openAuthModal() {
   document.getElementById('authModalBackdrop').style.display = 'flex';
 }
@@ -173,6 +184,7 @@ function openSetupTotpModal() {
       'Enable 2FA',
       `
       <p class="small">Scan this into any TOTP authenticator app (Google Authenticator, Authy, 1Password…), or enter the secret manually.</p>
+      <div class="totp-qr">${totpQrTag(setup.otpauthUri)}</div>
       <div class="totp-secret">${authEsc(setup.secret)}</div>
       <div class="auth-field"><label>Enter the 6-digit code from your app to confirm</label><input id="authTfCode" inputmode="numeric" maxlength="6" placeholder="000000"></div>
       <div class="auth-err" id="authTfErr"></div>

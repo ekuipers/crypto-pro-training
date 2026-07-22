@@ -15,12 +15,17 @@ export function loadCourseScript() {
 
 // Loads src/js/auth.js (Suite SSO account button + sign-in modal) as a
 // classic, non-module script, same mechanism as loadCourseScript() above.
+// src/js/qrcode-lib.js (vendored QR encoder, used by auth.js's 2FA setup
+// modal) loads alongside it — order relative to auth.js doesn't matter since
+// auth.js only reads window.qrcode later, when the user opens that modal.
 let authStarted = false;
 
 export function loadAuthScript() {
   if (authStarted) return;
   authStarted = true;
-  const el = document.createElement('script');
-  el.src = '/js/auth.js';
-  document.body.appendChild(el);
+  for (const src of ['/js/qrcode-lib.js', '/js/auth.js']) {
+    const el = document.createElement('script');
+    el.src = src;
+    document.body.appendChild(el);
+  }
 }
