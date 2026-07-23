@@ -82,6 +82,7 @@
     display:flex;flex-wrap:wrap;align-items:center;gap:4px 14px;text-align:left}
   .site-footer .footer-name{display:inline-flex;align-items:center;gap:6px;font-weight:700;color:var(--text);font-size:13px}
   .site-footer .footer-logo-icon{width:18px;height:18px;border-radius:4px;vertical-align:middle}
+  .site-footer .footer-studio{display:inline-flex;align-items:center;gap:6px}
   .site-footer .footer-sep{color:var(--line)}
   .footer-donate{color:#e0b45c;text-decoration:none}
   .footer-donate:hover{color:#f0c876}

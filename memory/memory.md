@@ -2,6 +2,26 @@
 
 Running log of changes to the Crypto Trading Micro-Learning course, per the workflow rules in `CLAUDE.md`.
 
+## v2.0.9 — 2026-07-23 — Roadmap: "rescan workflows rules" — Developer Studio logo added to footer
+
+**Task:** "rescan roadmap," run from CryptoPro Trader with write access to all sub-repos. Suite roadmap item 1
+was "rescan workflows rules." Suite workflow rule 3 had just been updated to require a "company logo" +
+"developer studio name" in the footer, alongside a genuinely new source asset (`docs/VibeSoft Studio
+logo.png` in the Suite repo). No footer in any of the 4 projects showed the Developer Studio's own name/logo
+before this. Implemented identically across all 4 projects (shared footer pattern, Suite workflow rule 17);
+full cross-project detail in Suite's own `memory/memory.md` 2026-07-23 (4).
+
+**Change:** resized the source PNG to a 96×96 `docs/studio-logo.png` (served at `/studio-logo.png` via this
+project's existing `express.static(docs)`, same path convention as `favicon.svg`). `client/src/components/
+Footer.jsx` gained a "Developer Studio: **SoftVibe Studio**" span (logo + text) next to "Creator: Erik
+Kuipers", reusing the existing `.footer-logo-icon` (18×18) sizing; added a `.footer-studio` flex-wrapper
+class to `src/css/course.css`. `#courseVersion` is set dynamically, no version-string edit needed here.
+
+**Verified:** `npm --prefix client run build` (31 modules, clean); local `node server.js` smoke test
+confirmed `/studio-logo.png` serves `200 image/png` and `/` still 200 (DB disabled locally — no connection
+string set, unrelated to this change); server stopped immediately after. No browser render check this
+session.
+
 ## v2.0.8 — 2026-07-23 — Roadmap: donation link swapped from Buy Me a Coffee to Patreon
 
 **Task:** "scan roadmap," run from CryptoPro Trader with write access to all sub-repos. Suite roadmap item 1:
