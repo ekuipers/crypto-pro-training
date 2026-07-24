@@ -21,8 +21,7 @@ bumped, same precedent as the original (now-corrected) entry — CSS-only change
 correction applied identically across Suite, Trader, Charts, and Mobile's header mockup — full cross-project
 detail in `CryptoPro Suite/memory/memory.md` (2026-07-24, entry "Roadmap items 1+2 corrected").
 
-**Not verified:** no browser check this session — the doubled header text hasn't been visually confirmed to
-fit the header row without wrapping/overlap.
+**User-confirmed (2026-07-24, same day):** visually checked and confirmed correct — no outstanding caveat.
 
 ## v2.0.12 — 2026-07-24 — Fix: sign-in database error (stale Supabase env var name)
 
